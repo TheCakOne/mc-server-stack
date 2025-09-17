@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  minecraft-server:
+    image: itzg/minecraft-server:latest
+    container_name: minecraft-server
+    ports:
+      - "25565:25565"
+    environment:
+      EULA: "TRUE" # Accept the Minecraft EULA
+      MEMORY: "8G" # Set the memory allocation
+    volumes:
+      - ./data:/data # Persist server data
+    restart: unless-stopped
+
+  netdata:
+    image: netdata/netdata:latest
+    container_name: netdata
+    ports:
+      - "19999:19999"
+    volumes:
+      - netdata:/etc/netdata
+      - netdata-lib:/var/lib/netdata
+      - netdata-cache:/var/cache/netdata
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/logs:/var/log/nginx
+    restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - portainer-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  netdata:
+  netdata-lib:
+  netdata-cache:
+  portainer-data:
