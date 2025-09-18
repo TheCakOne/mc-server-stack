@@ -4,8 +4,6 @@ services:
   minecraft-server:
     image: itzg/minecraft-server:latest
     container_name: minecraft-server
-    ports:
-      - "25565:25565"
     environment:
       EULA: "TRUE" # Accept the Minecraft EULA
       MEMORY: "8G" # Set the memory allocation
@@ -29,15 +27,17 @@ services:
     restart: unless-stopped
 
   nginx:
-    image: nginx:latest
-    container_name: nginx
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "8080:8080" # Admin interface
+      - "8443:8443" # Admin interface (SSL)
+      - "80:80"     # HTTP traffic
+      - "443:443"   # HTTPS traffic
+      - "25565:25565" # Minecraft server traffic
     volumes:
-      - ./nginx/conf:/etc/nginx/conf
-      - ./nginx/html:/usr/share/nginx/html
-      - ./nginx/logs:/var/log/nginx
+      - ./nginx/data:/data
+      - ./nginx/letsencrypt:/etc/letsencrypt
     restart: unless-stopped
 
   portainer:
