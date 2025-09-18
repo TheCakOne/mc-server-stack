@@ -31,7 +31,7 @@ services:
     container_name: nginx-proxy-manager
     ports:
       - "8080:8080" # Admin interface
-      - "8443:8443" # Admin interface (SSL)
+      - "8445:8443" # Admin interface (SSL)
       - "8081:80"   # HTTP traffic
       - "8444:443"  # HTTPS traffic
       - "25565:25565" # Minecraft server traffic
